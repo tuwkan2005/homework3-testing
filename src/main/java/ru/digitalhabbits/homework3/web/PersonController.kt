@@ -19,6 +19,7 @@ class PersonController {
         .setBaseUri(System.getProperty("targetUrl"))
         .setBasePath("/persons")
         .setAccept(ContentType.JSON)
+        .setContentType(ContentType.JSON)
         .log(LogDetail.ALL)
         .build()
 
@@ -60,13 +61,16 @@ class PersonController {
             .extract()
             .header(HttpHeaders.LOCATION)
             .toString()
+            .split("/")
+            .last()
             .toInt()
 
-    fun updatePerson(request: PersonRequest): PersonResponse =
+    fun updatePerson(request: PersonRequest, id: Int): PersonResponse =
         RestAssured.given(requestSpecification)
             .body(request)
             .contentType(ContentType.JSON)
-            .patch()
+            .pathParam("id", id)
+            .patch("/{id}")
             .then()
             .statusCode(HttpStatus.SC_OK)
             .extract()
@@ -76,7 +80,7 @@ class PersonController {
     fun deletePerson(id: Int) {
         RestAssured.given(requestSpecification)
             .pathParam("id", id)
-            .get("/{id}")
+            .delete("/{id}")
             .then()
             .statusCode(HttpStatus.SC_NO_CONTENT)
     }

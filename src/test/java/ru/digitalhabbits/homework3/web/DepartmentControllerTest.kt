@@ -1,5 +1,6 @@
 package ru.digitalhabbits.homework3.web
 
+import org.apache.commons.lang3.RandomStringUtils
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.groups.Tuple.tuple
 import org.junit.jupiter.api.DisplayName
@@ -25,8 +26,8 @@ internal class DepartmentControllerTest {
         assertThat(department.persons)
             .isNullOrEmpty()
 
-        request = DepartmentRequest(name = "IT")
-        department = departmentController.updateDepartment(request)
+        request = DepartmentRequest(name = RandomStringUtils.randomAlphabetic(10))
+        department = departmentController.updateDepartment(request, departmentId)
         assertThat(department)
             .extracting("name", "closed")
             .contains(request.name, false)
@@ -46,13 +47,13 @@ internal class DepartmentControllerTest {
         department = departmentController.department(departmentId)
         assertThat(department.persons)
             .extracting("id")
-            .containsExactly(personId1, personId2, personId3)
+            .containsExactlyInAnyOrder(personId1, personId2, personId3)
 
         departmentController.removePersonFromDepartment(departmentId, personId1)
         department = departmentController.department(departmentId)
         assertThat(department.persons)
             .extracting("id")
-            .containsExactly(personId2, personId3)
+            .containsExactlyInAnyOrder(personId2, personId3)
 
         departmentController.removePersonFromDepartment(departmentId, personId1)
 

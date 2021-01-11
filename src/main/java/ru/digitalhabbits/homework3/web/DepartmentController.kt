@@ -17,6 +17,7 @@ class DepartmentController {
         .setBaseUri(System.getProperty("targetUrl"))
         .setBasePath("/departments")
         .setAccept(ContentType.JSON)
+        .setContentType(ContentType.JSON)
         .log(LogDetail.ALL)
         .build()
 
@@ -58,13 +59,16 @@ class DepartmentController {
             .extract()
             .header(HttpHeaders.LOCATION)
             .toString()
+            .split("/")
+            .last()
             .toInt()
 
-    fun updateDepartment(request: DepartmentRequest): DepartmentResponse =
+    fun updateDepartment(request: DepartmentRequest, id: Int): DepartmentResponse =
         RestAssured.given(requestSpecification)
             .body(request)
             .contentType(ContentType.JSON)
-            .patch()
+            .pathParam("id", id)
+            .patch("/{id}")
             .then()
             .statusCode(HttpStatus.SC_OK)
             .extract()
@@ -74,13 +78,13 @@ class DepartmentController {
     fun deleteDepartment(id: Int) {
         RestAssured.given(requestSpecification)
             .pathParam("id", id)
-            .get("/{id}")
+            .delete("/{id}")
             .then()
             .statusCode(HttpStatus. SC_NO_CONTENT)
     }
 
     fun addPersonToDepartmentSuccess(departmentId: Int, personId: Int) {
-        addPersonToDepartment(departmentId, personId).statusCode(HttpStatus.SC_OK)
+        addPersonToDepartment(departmentId, personId).statusCode(HttpStatus.SC_NO_CONTENT)
     }
 
     fun addPersonToDepartmentConflict(departmentId: Int, personId: Int) {
@@ -99,7 +103,7 @@ class DepartmentController {
     fun closeDepartment(id: Int) {
         RestAssured.given(requestSpecification)
             .pathParam("id", id)
-            .get("/{id}/close")
+            .post("/{id}/close")
             .then()
             .statusCode(HttpStatus. SC_NO_CONTENT)
     }

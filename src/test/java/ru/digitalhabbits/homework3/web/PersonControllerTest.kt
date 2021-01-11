@@ -1,5 +1,6 @@
 package ru.digitalhabbits.homework3.web
 
+import org.apache.commons.lang3.RandomStringUtils.randomAlphabetic
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
@@ -21,8 +22,8 @@ internal class PersonControllerTest {
             .extracting("fullName", "age", "department.name")
             .contains("${request.firstName} ${request.middleName} ${request.lastName}", request.age, null)
 
-        request = PersonRequest(firstName = "Alex", lastName = "Romanov")
-        person = controller.updatePerson(request)
+        request = PersonRequest(firstName = randomAlphabetic(10), lastName = randomAlphabetic(10), middleName = randomAlphabetic(10))
+        person = controller.updatePerson(request, personId)
         assertThat(person)
             .extracting("fullName", "age", "department.name")
             .contains("${request.firstName} ${request.middleName} ${request.lastName}", null, null)
